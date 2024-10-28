@@ -10,8 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 0) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_24_210250) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "exchange_rates", force: :cascade do |t|
+    t.decimal "rate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "exchange_rate_id", null: false
+    t.string "coin_to_send"
+    t.string "coin_to_get"
+    t.decimal "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exchange_rate_id"], name: "index_transactions_on_exchange_rate_id"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.integer "usd_balance_in_cents"
+    t.integer "btc_balance_in_sats"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_foreign_key "transactions", "exchange_rates"
+  add_foreign_key "transactions", "users"
 end
